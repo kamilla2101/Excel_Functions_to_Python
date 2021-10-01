@@ -1,0 +1,28 @@
+def xnpv(rate, cashflows):
+
+    chron_order = sorted(cashflows, key=lambda x: x[0])
+    t0 = chron_order[0][0]  # t0 is the date of the first cash flow
+    return sum([cf / (1 + rate) ** ((t - t0).days / 365.0) for (t, cf) in chron_order])
+
+def xirr(transactions):
+    years = [(ta[0] - transactions[0][0]).days / 365.0 for ta in transactions]
+    residual = 1
+    step = 0.05
+    guess = 0.1
+    epsilon = 0.0001
+    limit = 10000
+    while abs(residual) > epsilon and limit > 0:
+        limit -= 1
+        residual = 0.0
+        for i, ta in enumerate(transactions):
+            try:
+                residual += ta[1] / pow(guess, years[i])
+            except ZeroDivisionError as e:
+                return 0
+        if abs(residual) > epsilon:
+            if residual > 0:
+                guess += ste
+            else:
+                guess -= step
+                step /= 2.0
+    return guess - 1
